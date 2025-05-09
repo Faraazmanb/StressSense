@@ -9,4 +9,4 @@ torchvision==0.17.2
 Pillow==10.2.0
 numpy==1.26.4
 keras==2.15.0
-tensorflow==2.18.0
+tensorflow==2.15.0
