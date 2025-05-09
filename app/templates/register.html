@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Register</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"
+    />
+    <style>
+      /* Consistent Dark Theme */
+      body {
+        background-color: #323232;
+        color: white;
+        font-family: "Poppins", sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+
+      /* Glassmorphic Form Container */
+      .container {
+        max-width: 400px;
+        padding: 30px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        position: relative;
+      }
+
+      /* Logo Styling */
+      .logo {
+        display: block;
+        margin: 0 auto; /* Centers the image horizontally */
+        width: 80px; /* Adjust the size as needed */
+        border: 1px solid white; /* White border */
+        border-radius: 150px; /* Optional: Rounded corners */
+        padding: 1px; /* Optional: Space between image and border */
+        background-color: white; /* Optional: Ensures the border stands out */
+      }
+
+      /* Form Fields */
+      .form-control {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        border-radius: 8px;
+        padding: 12px;
+        color: white;
+        font-size: 16px;
+      }
+
+      .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      .form-control:focus {
+        background: rgba(255, 255, 255, 0.3);
+        outline: none;
+        box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+      }
+
+      /* Buttons */
+      .btn-primary {
+        background: #28a745;
+        color: white;
+        border-radius: 25px;
+        padding: 12px;
+        width: 100%;
+        font-weight: bold;
+        transition: 0.3s;
+      }
+
+      .btn-primary:hover {
+        background: rgb(29, 97, 45);
+        transform: scale(1.05);
+      }
+
+      .btn-secondary {
+        background: rgb(50, 50, 50);
+        border-radius: 8px;
+        padding: 10px;
+        margin-top: 10px;
+        transition: 0.3s;
+      }
+
+      .btn-secondary:hover {
+        background: rgb(70, 70, 70);
+      }
+    </style>
+    <script>
+      function showAlert() {
+        alert(
+          "Username already exists with the same password! Please use a different username or password."
+        );
+      }
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Logo at Top Left -->
+      <img
+        src="{{ url_for('static', filename='images/logoaania.png') }}"
+        alt="Logo"
+        class="logo"
+      />
+
+      <h2 class="mb-4">Register</h2>
+      <form action="/register" method="post">
+        <input
+          type="text"
+          name="username"
+          placeholder="Username"
+          class="form-control mb-3"
+          required
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          class="form-control mb-3"
+          required
+        />
+        <button type="submit" class="btn btn-primary">Register</button>
+      </form>
+      {% if alert %}
+      <script>
+        showAlert();
+      </script>
+      {% endif %}
+      <a href="/" class="btn btn-secondary">Back to Login</a>
+    </div>
+  </body>
+</html>

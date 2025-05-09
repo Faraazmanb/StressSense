@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"
+    />
+    <style>
+      body {
+        background: #323232; /* Background color */
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        font-family: Arial, sans-serif;
+      }
+      .container {
+        max-width: 400px;
+        padding: 30px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(10px);
+        text-align: center;
+      }
+      .logo {
+        display: block;
+        margin: 0 auto; /* Centers the image horizontally */
+        width: 80px; /* Adjust the size as needed */
+        border: 1px solid white; /* White border */
+        border-radius: 150px; /* Optional: Rounded corners */
+        padding: 1px; /* Optional: Space between image and border */
+        background-color: white; /* Optional: Ensures the border stands out */
+      }
+      .form-control {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+      }
+      .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+      }
+      .btn-custom {
+        width: 100%;
+        padding: 10px;
+        border-radius: 25px;
+        font-size: 16px;
+        font-weight: bold;
+        transition: 0.3s;
+      }
+      .btn-light {
+        background: #007bff; /* Primary button color */
+        color: white;
+      }
+      .btn-light:hover {
+        background: rgb(0, 12, 149); /* Hover color */
+      }
+      .btn-warning {
+        background: rgb(50, 50, 50); /* Secondary button color */
+        color: white;
+      }
+      .btn-warning:hover {
+        background: rgb(252, 255, 67); /* Hover color */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <img
+        src="{{ url_for('static', filename='images/logoaania.png') }}"
+        alt="Logo"
+        class="logo"
+      />
+      <h2 class="mb-4">Login</h2>
+      <form action="/login" method="post">
+        <input
+          type="text"
+          name="username"
+          placeholder="Username"
+          class="form-control mb-3"
+          required
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          class="form-control mb-3"
+          required
+        />
+        <button type="submit" class="btn btn-light btn-custom">Login</button>
+      </form>
+      <div class="mt-3">
+        <a href="/register" class="btn btn-warning btn-custom">Register</a>
+      </div>
+    </div>
+  </body>
+</html>

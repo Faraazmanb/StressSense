@@ -1,0 +1,1 @@
+pip install flask pymongo flask-session werkzeug

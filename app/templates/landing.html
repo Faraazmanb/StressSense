@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Landing Page</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .bird {
+        position: absolute;
+        top: 40%;
+        left: -100px;
+        width: 100px;
+        animation: flyRight 1.2s linear forwards,
+          flyTopLeft 1.5s ease-in-out 2.4s forwards;
+      }
+
+      @keyframes flyRight {
+        0% {
+          left: -100px;
+        }
+        100% {
+          left: 50%;
+          transform: translateX(-50%);
+        }
+      }
+
+      @keyframes flyTopLeft {
+        0% {
+          left: 50%;
+          transform: translateX(-50%);
+          top: 40%;
+        }
+        100% {
+          left: 35px;
+          top: 0;
+          width: 60px; /* Optional: Make the bird smaller */
+        }
+      }
+      .text-container {
+        opacity: 0;
+        text-align: center;
+        margin-top: 100px;
+        animation: fadeIn 1.4s ease-in-out 1.9s forwards;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .welcome {
+        font-size: 50px;
+        font-weight: bold;
+        background: linear-gradient(
+          90deg,
+          red,
+          yellow,
+          green,
+          cyan,
+          blue,
+          magenta
+        );
+        background-size: 400% 400%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: colorChange 3s infinite;
+      }
+
+      @keyframes colorChange {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      .subtitle {
+        font-size: 30px;
+        color: black;
+        margin-top: 10px;
+      }
+
+      .buttons {
+        display: none;
+        margin-top: 30px;
+        animation: fadeIn 2s ease-in-out 5s forwards;
+      }
+
+      .btn {
+        padding: 12px 25px;
+        margin: 10px;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        border: none;
+        border-radius: 30px; /* Curved edges */
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Soft shadow */
+      }
+
+      .login {
+        background: linear-gradient(
+          135deg,
+          #007bff,
+          #0056b3
+        ); /* Blue gradient */
+        color: white;
+      }
+
+      .register {
+        background: linear-gradient(
+          135deg,
+          #28a745,
+          #1e7e34
+        ); /* Green gradient */
+        color: white;
+      }
+
+      /* Hover effect */
+      .btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3);
+        opacity: 0.9;
+      }
+    </style>
+  </head>
+  <body>
+    <img
+      src="{{ url_for('static', filename='images/logoaania.png') }}"
+      class="bird"
+      alt="Bird Logo"
+    />
+
+    <div class="text-container">
+      <div class="welcome">Welcome</div>
+      <div class="subtitle">Real-time stress detection system</div>
+    </div>
+
+    <div class="buttons">
+      <button
+        class="btn login"
+        onclick="window.location.href='{{ url_for('login') }}'"
+      >
+        Login
+      </button>
+      <button
+        class="btn register"
+        onclick="window.location.href='{{ url_for('register') }}'"
+      >
+        Register
+      </button>
+    </div>
+
+    <script>
+      setTimeout(() => {
+        document.querySelector(".buttons").style.display = "block";
+      }, 5000);
+    </script>
+  </body>
+</html>

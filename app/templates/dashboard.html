@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Emotion Analysis Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      body {
+        background-image: url("{{ url_for('static', filename='images/wel wp.jpg') }}");
+
+        font-family: Arial, sans-serif;
+
+        color: white;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+      }
+      .dashboard {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 20px;
+        border-radius: 10px;
+        background: rgba(0, 0, 0, 0.4);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      }
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .buttons {
+        display: flex;
+        gap: 12px;
+      }
+      .button {
+        padding: 10px 15px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .toggle-btn {
+        background: rgb(35, 59, 237);
+        color: white;
+      }
+      .logout {
+        background: red;
+        color: white;
+      }
+      .analysis-btn {
+        background: rgb(35, 59, 237);
+        color: white;
+      }
+      .dropdown {
+        background: #222;
+        color: white;
+        border: 1px solid #555;
+        padding: 10px;
+        border-radius: 6px;
+      }
+      .content {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+        gap: 20px;
+      }
+      .live-feed,
+      .analysis {
+        width: 48%;
+        padding: 15px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.2);
+      }
+      .bar-container {
+        width: 100%;
+        height: 20px;
+        background: white;
+        border-radius: 10px;
+        margin-top: 10px;
+        overflow: hidden;
+      }
+      .bar {
+        height: 100%;
+        width: 0%;
+        transition: width 0.5s;
+      }
+      .stress-bar {
+        background: red;
+      }
+      .no-stress-bar {
+        background: green;
+      }
+
+      /* Modal */
+      .chart-modal {
+        margin-top: 20px;
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 600px;
+        max-width: 90%;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+        text-align: center;
+        z-index: 1000;
+        background: rgba(0, 0, 0, 0.85);
+      }
+      .close-chart {
+        margin-top: 15px;
+        padding: 8px 12px;
+        background: red;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard">
+      <div class="header">
+        <h1>Emotion Analysis Dashboard</h1>
+        <div class="buttons">
+          <select id="mode-select" class="dropdown">
+            <option value="stress" selected>Detect Stress Level</option>
+            <option value="emotion">Detect Emotion Type</option>
+          </select>
+          <button class="button toggle-btn">▶️ Start</button>
+          <button class="button analysis-btn">📊 Analysis</button>
+          <button
+            class="button logout"
+            onclick="window.location.href='/logout'"
+          >
+            🚪 Logout
+          </button>
+        </div>
+      </div>
+
+      <div class="content" id="live-content">
+        <div class="live-feed">
+          <h2>Live Feed</h2>
+          <img src="/video_feed" width="100%" />
+        </div>
+
+        <div class="analysis">
+          <h2>Real-time Analysis</h2>
+
+          <div id="stress-section">
+            <p>Stress Level</p>
+            <div class="bar-container">
+              <div class="bar stress-bar" id="stress-bar"></div>
+            </div>
+            <p id="stress-value">0%</p>
+            <p>No-Stress Level</p>
+            <div class="bar-container">
+              <div class="bar no-stress-bar" id="no-stress-bar"></div>
+            </div>
+            <p id="no-stress-value">0%</p>
+          </div>
+
+          <div id="emotion-section" class="hidden">
+            <p>Detected Emotion</p>
+            <h2 id="emotion-name">Neutral</h2>
+            <p id="emotion-confidence">Confidence: 0%</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="chart-modal" id="chart-modal">
+      <h2>Time Spent in Stress & No Stress</h2>
+      <div class="chart-container">
+        <canvas id="stressChart"></canvas>
+      </div>
+      <button class="close-chart">❌ Close</button>
+    </div>
+
+    <script>
+      let stressTime = 0;
+      let noStressTime = 0;
+      let lastUpdateTime = null;
+      let isTracking = false;
+      let intervalId = null;
+      let currentMode = "stress";
+      let myChart = null;
+
+      function updateBars(stress) {
+        document.getElementById("stress-bar").style.width = stress + "%";
+        document.getElementById("no-stress-bar").style.width =
+          100 - stress + "%";
+        document.getElementById("stress-value").innerText =
+          stress.toFixed(2) + "%";
+        document.getElementById("no-stress-value").innerText =
+          (100 - stress).toFixed(2) + "%";
+      }
+
+      function fetchData() {
+        if (!isTracking) return;
+
+        if (currentMode === "stress") {
+          fetch("/get_stress")
+            .then((res) => res.json())
+            .then((data) => {
+              updateBars(data.stress);
+              updateTimeData(data.stress);
+            });
+        } else if (currentMode === "emotion") {
+          fetch("/get_emotion")
+            .then((res) => res.json())
+            .then((data) => {
+              document.getElementById("emotion-name").innerText = data.emotion;
+              document.getElementById(
+                "emotion-confidence"
+              ).innerText = `Confidence: ${data.confidence.toFixed(2)}%`;
+            });
+        }
+      }
+
+      function updateTimeData(stressLevel) {
+        let currentTime = Date.now();
+        if (lastUpdateTime === null) {
+          lastUpdateTime = currentTime;
+          return;
+        }
+        let diff = (currentTime - lastUpdateTime) / 1000;
+        lastUpdateTime = currentTime;
+        if (stressLevel > 50) stressTime += diff;
+        else noStressTime += diff;
+      }
+
+      function updateChart() {
+        const ctx = document.getElementById("stressChart").getContext("2d");
+        if (myChart) myChart.destroy();
+        myChart = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: ["Stress Time (s)", "No Stress Time (s)"],
+            datasets: [
+              {
+                label: "Time Spent",
+                data: [stressTime.toFixed(2), noStressTime.toFixed(2)],
+                backgroundColor: ["red", "green"],
+              },
+            ],
+          },
+          options: { responsive: true },
+        });
+      }
+
+      document
+        .querySelector(".toggle-btn")
+        .addEventListener("click", function () {
+          isTracking = !isTracking;
+          if (isTracking) {
+            lastUpdateTime = Date.now();
+            intervalId = setInterval(fetchData, 1000);
+            this.innerText = "⏹ Stop";
+            this.style.background = "rgb(255, 61, 27)";
+          } else {
+            clearInterval(intervalId);
+            this.innerText = "▶️ Start";
+            this.style.background = "rgb(35, 59, 237)";
+          }
+        });
+
+      document
+        .querySelector(".analysis-btn")
+        .addEventListener("click", function () {
+          document.getElementById("live-content").classList.add("hidden");
+          document.getElementById("chart-modal").style.display = "block";
+          updateChart();
+        });
+
+      document
+        .querySelector(".close-chart")
+        .addEventListener("click", function () {
+          document.getElementById("chart-modal").style.display = "none";
+          document.getElementById("live-content").classList.remove("hidden");
+        });
+
+      document
+        .getElementById("mode-select")
+        .addEventListener("change", function () {
+          currentMode = this.value;
+          fetch(`/set_mode/${currentMode}`);
+          if (currentMode === "stress") {
+            document
+              .getElementById("stress-section")
+              .classList.remove("hidden");
+            document.getElementById("emotion-section").classList.add("hidden");
+          } else {
+            document.getElementById("stress-section").classList.add("hidden");
+            document
+              .getElementById("emotion-section")
+              .classList.remove("hidden");
+          }
+        });
+    </script>
+  </body>
+</html>

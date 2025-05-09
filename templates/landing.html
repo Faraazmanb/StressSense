@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Landing Page</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-image: url("{{ url_for('static', filename='images/image4.png') }}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        flex-direction: column;
+        overflow: hidden;
+        font-family: "Arial", sans-serif;
+        position: relative;
+      }
+
+      .bird {
+        position: absolute;
+        top: 40%;
+        left: -100px;
+        width: 100px;
+        animation: flyRight 1.2s linear forwards,
+          flyTopLeft 1.5s ease-in-out 2.4s forwards;
+        cursor: pointer;
+        z-index: 10;
+        transition: transform 0.3s ease;
+      }
+
+      .bird:hover {
+        transform: scale(1.1) rotate(5deg);
+      }
+
+      @keyframes flyRight {
+        0% {
+          left: -100px;
+        }
+        100% {
+          left: 50%;
+          transform: translateX(-50%);
+        }
+      }
+
+      @keyframes flyTopLeft {
+        0% {
+          left: 50%;
+          transform: translateX(-50%);
+          top: 40%;
+        }
+        100% {
+          left: 35px;
+          top: 0;
+          width: 60px;
+        }
+      }
+
+      .text-container {
+        opacity: 0;
+        text-align: center;
+        margin-top: 100px;
+        animation: fadeIn 1.4s ease-in-out 1.9s forwards;
+        cursor: default;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .welcome {
+        font-size: 50px;
+        font-weight: bold;
+        background: linear-gradient(90deg, red, black, magenta);
+        background-size: 400% 400%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: colorChange 3s infinite;
+        text-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease;
+      }
+
+      .welcome:hover {
+        transform: scale(1.05);
+      }
+
+      @keyframes colorChange {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      .subtitle {
+        font-size: 30px;
+        font-weight: bold;
+        color: black; /* You can change to 'purple' or a hex code like '#800080' */
+        margin-top: 10px;
+        position: relative;
+        display: inline-block;
+      }
+
+      .subtitle::after {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -5px;
+        left: 50%;
+        background: linear-gradient(90deg, red, black, magenta);
+        transition: all 0.5s ease;
+        transform: translateX(-50%);
+      }
+
+      .subtitle:hover::after {
+        width: 100%;
+      }
+
+      .buttons {
+        display: none;
+        margin-top: 30px;
+        animation: fadeIn 2s ease-in-out 5s forwards;
+      }
+
+      .btn {
+        padding: 12px 25px;
+        margin: 10px;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        border: none;
+        border-radius: 30px;
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.2);
+        transition: all 0.4s ease-in-out;
+      }
+
+      .btn:hover::before {
+        left: 100%;
+      }
+
+      .login {
+        background: linear-gradient(
+          135deg,
+          rgb(176, 59, 219),
+          rgb(111, 35, 130)
+        );
+        color: white;
+      }
+
+      .register {
+        background: linear-gradient(135deg, rgb(255, 25, 220), rgb(161, 8, 77));
+        color: white;
+      }
+
+      .btn:hover {
+        transform: scale(1.05) translateY(-3px);
+        box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      .btn:active {
+        transform: scale(0.98) translateY(0);
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+      }
+
+      .feature-icons {
+        display: none;
+        position: absolute;
+        bottom: 30px;
+        width: 100%;
+        justify-content: center;
+        gap: 40px;
+        animation: fadeIn 1s ease-in-out 6s forwards;
+      }
+
+      .feature {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .feature:hover {
+        transform: translateY(-10px);
+      }
+
+      .feature-icon {
+        width: 50px;
+        height: 50px;
+        background-color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        margin-bottom: 10px;
+      }
+
+      .feature-label {
+        color: white;
+        font-weight: bold;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .feature:hover .feature-label {
+        opacity: 1;
+      }
+
+      .tooltip {
+        position: absolute;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 10px 15px;
+        border-radius: 5px;
+        font-size: 14px;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 100;
+        max-width: 200px;
+        text-align: center;
+      }
+
+      .pulsing-circle {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: rgba(255, 25, 220, 0.2);
+        opacity: 0;
+        transform: scale(0);
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(0);
+          opacity: 0.8;
+        }
+        100% {
+          transform: scale(2);
+          opacity: 0;
+        }
+      }
+
+      .particles {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+
+      .particle {
+        position: absolute;
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        animation: float 15s linear infinite;
+        opacity: 0.5;
+      }
+
+      @keyframes float {
+        0% {
+          transform: translateY(0) translateX(0) rotate(0deg);
+          opacity: 0;
+        }
+        10% {
+          opacity: 0.5;
+        }
+        90% {
+          opacity: 0.5;
+        }
+        100% {
+          transform: translateY(-500px) translateX(100px) rotate(360deg);
+          opacity: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="particles" id="particles"></div>
+    <div class="pulsing-circle"></div>
+
+    <img
+      src="{{ url_for('static', filename='images/logoaania.png') }}"
+      class="bird"
+      alt="Bird Logo"
+      id="logo"
+    />
+
+    <div class="text-container">
+      <div class="welcome" id="welcome-text">Welcome</div>
+      <div class="subtitle" id="subtitle">
+        Real-time Stress & Emotion Detection System
+      </div>
+    </div>
+
+    <div class="buttons">
+      <button
+        class="btn login"
+        onclick="window.location.href='{{ url_for('login') }}'"
+      >
+        Login
+      </button>
+      <button
+        class="btn register"
+        onclick="window.location.href='{{ url_for('register') }}'"
+      >
+        Register
+      </button>
+    </div>
+
+    <div class="feature-icons" id="feature-icons">
+      <div class="feature" data-tooltip="Monitor stress levels in real-time">
+        <div class="feature-icon">❤️</div>
+        <div class="feature-label">Stress Tracking</div>
+      </div>
+      <div class="feature" data-tooltip="Detect and analyze emotional states">
+        <div class="feature-icon">😊</div>
+        <div class="feature-label">Emotion Analysis</div>
+      </div>
+      <div
+        class="feature"
+        data-tooltip="Get personalized insights and recommendations"
+      >
+        <div class="feature-icon">📊</div>
+        <div class="feature-label">Insights</div>
+      </div>
+    </div>
+
+    <div class="tooltip" id="tooltip"></div>
+
+    <script>
+      // Show buttons and features after animation
+      setTimeout(() => {
+        document.querySelector(".buttons").style.display = "flex";
+        document.querySelector(".feature-icons").style.display = "flex";
+      }, 5000);
+    </script>
+  </body>
+</html>
